@@ -23,18 +23,8 @@ const std::shared_ptr<http_response> create_stream_resource::render_POST(const h
                     std::string url = req_json.at("url");
                     int created_by = req_json.at("created_by");
                     std::string ffmpeg_command = req_json.at("ffmpeg_command");
- 
-                    std::istringstream iss(ffmpeg_command);
-                    std::vector<std::string> results((std::istream_iterator<std::string>(iss)),
-                                                    std::istream_iterator<std::string>());
-                    
-                    char* commands[results.size()+1];
-                    for (int x = 0; x < results.size(); x++) {
-                        commands[x] = strdup(results[x].c_str());
-                    }
-                    commands[results.size()] = NULL;
                     run_command command =  run_command();
-                    int pid = command.runffmpeg(commands);
+                    int pid = command.runffmpeg(url, stream_id, ffmpeg_command);
                     std::cout << "el pid del fork es" << pid << std::endl;
                     int last_id = db->stor->insert(Stream{0, pid , created_by, stream_id,url, ffmpeg_command, time(0), time(0)});
                     response_json["success"]  = last_id;

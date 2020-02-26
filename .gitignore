@@ -1,4 +1,4 @@
 *.sqlite
 *.log
 .vscode
-httpbuild
+httpbuild*

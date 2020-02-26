@@ -26,20 +26,8 @@ const std::shared_ptr<http_response> start_stream_resource::render_GET(const htt
                 response_json["error"] = "stream already running";
                 response = new string_response (response_json.dump() ,400, "application/json");response_json["is_running"] = true;
             }else{
-                //pid is not running
-                std::string ffmpeg_command = stream.ffmpeg_command;
- 
-                std::istringstream iss(ffmpeg_command);
-                std::vector<std::string> results((std::istream_iterator<std::string>(iss)),
-                                                std::istream_iterator<std::string>());
-                
-                char* commands[results.size()+1];
-                for (int x = 0; x < results.size(); x++) {
-                    commands[x] = strdup(results[x].c_str());
-                }
-                commands[results.size()] = NULL;
                 run_command command =  run_command();
-                int pid = command.runffmpeg(commands);
+                int pid = command.runffmpeg(stream.url,stream.stream_id,stream.ffmpeg_command);
                 stream.pid = pid;
                 db->stor->update(stream);
                 response_json["success"] = pid;
