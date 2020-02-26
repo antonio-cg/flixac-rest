@@ -1,6 +1,10 @@
+#ifndef db_controller_h
+#define db_controller_h
+
 #include <iostream>
 #include "models.hpp"
 #include "storage.hpp"
+
 
 class db_controller {
     public:
@@ -17,4 +21,4 @@ class db_controller {
         
 
 };
-
+#endif

@@ -1,7 +1,8 @@
+#ifndef storage_h
+#define storage_h
 #include "dist/sqlite_orm/sqlite_orm.h"
 #include <iostream>
 #include "models.hpp"
-
 
 inline auto initStorage(const std::string &path) {
     using namespace sqlite_orm;
@@ -18,3 +19,4 @@ inline auto initStorage(const std::string &path) {
 }
 
 using Storage = decltype(initStorage(""));
+#endif

@@ -10,35 +10,33 @@ const std::shared_ptr<http_response> create_stream_resource::render_POST(const h
         json req_json;
         
         std::string stream_id = req.get_arg("stream-id");
-        std::cout << "stream name: " << stream_id << "\n";
         using namespace sqlite_orm;
         db_controller* db = db_controller::getInstance(); 
-        std::cout <<" Quering db \n";
         try{
             auto query = db->stor->get_all<Stream>(where( c(&Stream::stream_id) == stream_id ));
-        
-            std::cout<< "ok database \n";
             if(query.size() > 0 ){
                 response_json["error"] = "stream already register";
                 response = new string_response (response_json.dump() ,400, "application/json");
             }else{
                 if(json::accept(req.get_content())){
-                    std::cout << "json valido" << "\n";
-                    std::cout << req.get_content() << std::endl;
                     req_json = json::parse( req.get_content());
                     std::string url = req_json.at("url");
                     int created_by = req_json.at("created_by");
                     std::string ffmpeg_command = req_json.at("ffmpeg_command");
- /*
+ 
                     std::istringstream iss(ffmpeg_command);
                     std::vector<std::string> results((std::istream_iterator<std::string>(iss)),
                                                     std::istream_iterator<std::string>());
                     
                     char* commands[results.size()+1];
-                    std::copy(results.begin(), results.end(), commands);
-*/
-
-                    int last_id = db->stor->insert(Stream{NULL, NULL, created_by, stream_id,url, ffmpeg_command, time(0), 0});
+                    for (int x = 0; x < results.size(); x++) {
+                        commands[x] = strdup(results[x].c_str());
+                    }
+                    commands[results.size()] = NULL;
+                    run_command command =  run_command();
+                    int pid = command.runffmpeg(commands);
+                    std::cout << "el pid del fork es" << pid << std::endl;
+                    int last_id = db->stor->insert(Stream{0, pid , created_by, stream_id,url, ffmpeg_command, time(0), time(0)});
                     response_json["success"]  = last_id;
                     response = new string_response (response_json.dump(),200, "application/json");
                 }else{
