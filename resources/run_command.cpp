@@ -46,7 +46,7 @@ int run_command::runffmpeg(std::string url, std::string stream_id, std::string f
         rtmp_server.append(this->stream_id);
         commands[size-3] = (char *)"-f";
         commands[size-2] = (char *)"flv";
-        commands[size-1] = (char *)live_url.c_str();
+        commands[size-1] = (char *)rtmp_server.c_str();
         commands[size] = NULL; 
         char  *env[] = { (char *)log_path_string.c_str(),  (char *)0 };
         execve (ffmpeg_bin.c_str(), commands, env);
